@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.mvu.lottery.constant.LotteryConfiguration;
 import com.mvu.lottery.constant.LotteryConstants;
 import com.mvu.lottery.customserializer.SerializeFieldConditionally;
+import com.mvu.lottery.data.model.SelectedTicketData;
 import com.mvu.lottery.service.LastDrawnTicketService;
 import com.mvu.lottery.stateholder.LastDrawnNumberOnfileInfo;
 import com.mvu.lottery.stateholder.LastDrawnTicketStateHolder;
@@ -54,6 +56,18 @@ public class LotteryDataController implements LotteryConstants {
 	
 	@Autowired
 	private SessionDataBySessionIdAndDataKey<LastDrawnNumberOnfileInfo, Future<LastDrawnNumberOnfileInfo>> asynchStorage;
+	
+	/**
+	 * 
+	 * @param selectedTicketData
+	 * @return
+	 */
+	@PostMapping("/api/selectedTicket/save")
+	public Object postSelectedTicket(@RequestBody SelectedTicketData selectedTicketData) {
+		
+		System.out.println(">>>postSelectedTicket:"+selectedTicketData);
+		return "";
+	}
 	
 	/**
 	 * 

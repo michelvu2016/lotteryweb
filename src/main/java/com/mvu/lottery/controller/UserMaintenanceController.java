@@ -1,7 +1,9 @@
 package com.mvu.lottery.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class UserMaintenanceController {
@@ -15,6 +17,11 @@ public class UserMaintenanceController {
 		
 	//}
 	
+	@GetMapping("/test")
+	@ResponseBody
+	public String test() {
+		return "It works";
+	}
 	
 
 }

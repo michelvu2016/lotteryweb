@@ -1,7 +1,5 @@
 package com.mvu.lottery.configuration;
 
-
-
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -40,96 +38,93 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 @EnableAutoConfiguration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
-@PropertySource({"classpath:application.properties",
-	"classpath:externalprocess.properties", 
-	"classpath:mongodb.properties",
-	"classpath:mysql.properties"})
-@ComponentScan(basePackages = {"com.mvu.lottery.service"})
+@PropertySource({ "classpath:application.properties", "classpath:externalprocess.properties",
+		"classpath:mongodb.properties", "classpath:mysql.properties" })
+@ComponentScan(basePackages = { "com.mvu.lottery.service" })
 public class LotteryAppConfiguration {
-	
-	private Logger log = LoggerFactory.getLogger(LotteryAppConfiguration.class);
-	
 
-	
-	@Autowired
-	@Bean
-	public DataSource dataSource(MySqlDBConfig mySqlDbConfig) {
-		
-		log.info(">>>>datasource()");
-		MysqlDataSource ds = new MysqlDataSource();
-		
-		
-		
-		if (mySqlDbConfig == null) {
-			log.info("this.mySqlDbConfig is null");
-		};
-		
-		log.info(">>>dburl: "+mySqlDbConfig.getDbUrl());
-		log.info(">>>user Name: "+mySqlDbConfig.getUserName());
-		log.info(">>>pass: "+mySqlDbConfig.getPassword());
-		
-		
-		ds.setURL(mySqlDbConfig.getDbUrl());
-		ds.setUser(mySqlDbConfig.getUserName());
-		ds.setPassword(mySqlDbConfig.getPassword());
-		
-		return (DataSource) ds;
-		
-		
-	}
-	
+	private Logger log = LoggerFactory.getLogger(LotteryAppConfiguration.class);
+
+	/*
+	 * @Autowired
+	 * 
+	 * @Bean public DataSource dataSource(MySqlDBConfig mySqlDbConfig) {
+	 * 
+	 * log.info(">>>>datasource()"); MysqlDataSource ds = new MysqlDataSource();
+	 * 
+	 * 
+	 * 
+	 * if (mySqlDbConfig == null) { log.info("this.mySqlDbConfig is null"); };
+	 * 
+	 * log.info(">>>dburl: "+mySqlDbConfig.getDbUrl());
+	 * log.info(">>>user Name: "+mySqlDbConfig.getUserName());
+	 * log.info(">>>pass: "+mySqlDbConfig.getPassword());
+	 * 
+	 * 
+	 * ds.setURL(mySqlDbConfig.getDbUrl()); ds.setUser(mySqlDbConfig.getUserName());
+	 * ds.setPassword(mySqlDbConfig.getPassword());
+	 * 
+	 * return (DataSource) ds;
+	 * 
+	 * 
+	 * }
+	 */
+
 	@Bean
 	public StrongPasswordEncryptor strongPasswordEncryptor() {
-		
+
 		StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
 		return encryptor;
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder(StrongPasswordEncryptor passwordEncryptor) {
-		
+
 		PasswordEncoder passwordEncoder = new PasswordEncoder() {
-			
+
 			@Override
 			public boolean matches(CharSequence rawPassword, String encodedPassword) {
 				return passwordEncryptor.checkPassword(rawPassword.toString(), encodedPassword);
-				
+
 			}
-			
+
 			@Override
 			public String encode(CharSequence rawPassword) {
-				
+
 				return passwordEncryptor.encryptPassword(rawPassword.toString());
 			}
 		};
-		
-		
+
 		return passwordEncoder;
 	}
-	
+
 	@Bean
-	public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
+	public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder,
+			UserDetailsService userDetailsService) {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		
+
 		provider.setUserDetailsService(userDetailsService);
 		provider.setPasswordEncoder(passwordEncoder);
-		
+
 		return provider;
 	}
 
 	@Bean
 	@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public LoteryDataConverter lotteryDataConverter()   {return new LoteryDataConverter();};
+	public LoteryDataConverter lotteryDataConverter() {
+		return new LoteryDataConverter();
+	};
 
 	@Bean
-	public ProcessUtils getProcessUtil() { return new ProcessUtils();}
-	
-	//@Bean
+	public ProcessUtils getProcessUtil() {
+		return new ProcessUtils();
+	}
+
+	// @Bean
 	public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
 		return new PropertyPlaceholderConfigurer();
 	}
-	
-	
+
 	/*
 	 * @Autowired
 	 * 
@@ -141,19 +136,19 @@ public class LotteryAppConfiguration {
 	 * 
 	 * }
 	 */
-	
+
 	@Bean
 	public PropertySourcesPlaceholderConfigurer propertySourcePlaceHolderConfiger() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
-	
+
 	@Bean
 	public IFieldSerializerValueApprover createApprover() {
 		return new IFieldSerializerValueApprover() {
 
 			@Override
 			public String filterName() {
-				
+
 				return "filteronmega";
 			}
 
@@ -166,56 +161,55 @@ public class LotteryAppConfiguration {
 				} else {
 					return true;
 				}
-					
-				
+
 			}
-			
+
 		};
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 *//*
+		 * private Properties jpaProperties() { Properties prop = new Properties();
+		 * prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+		 * return prop; }
+		 */
 	/**
 	 * 
 	 * @return
 	 */
-	private Properties jpaProperties() {
-		Properties prop = new Properties();
-		prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-		return prop;
-	}
-	
-	/**
+	/*
+	 * @Bean(name = "entityManagerFactory") public EntityManagerFactory
+	 * entityManagerFactory(DataSource mySqlDatasource) {
 	 * 
-	 * @return
+	 * LocalContainerEntityManagerFactoryBean em = new
+	 * LocalContainerEntityManagerFactoryBean(); em.setDataSource(mySqlDatasource);
+	 * em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+	 * em.setJpaProperties(this.jpaProperties()); em.setPackagesToScan(new String[]
+	 * { "com.mvu.lottery.data.model" });
+	 * em.setPersistenceUnitName("LotteryNumberPicker"); em.afterPropertiesSet();
+	 * 
+	 * return em.getObject(); }
 	 */
-	@Bean(name="entityManagerFactory")
-	public EntityManagerFactory entityManagerFactory(DataSource mySqlDatasource) {
-		
-	     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-	     em.setDataSource(mySqlDatasource);
-	     em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-	     em.setJpaProperties(this.jpaProperties());
-	     em.setPackagesToScan(new String[] {"com.mvu.lottery.data.model"});
-	     em.setPersistenceUnitName("LotteryNumberPicker");
-	     em.afterPropertiesSet();
-	     
-	     return em.getObject();
-	}
 
 	/**
 	 * 
 	 * @param emf
 	 * @return
 	 */
-	@Bean
-	public PlatformTransactionManager transacctionManager(EntityManagerFactory emf) {
-		
-		System.out.println(">>>EntityManagerFactory:"+emf);
-		
-		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManager.setEntityManagerFactory(emf);
-		
-		return transactionManager;
-		
-	}
-	
+	/*
+	 * @Bean public PlatformTransactionManager
+	 * transacctionManager(EntityManagerFactory emf) {
+	 * 
+	 * System.out.println(">>>EntityManagerFactory:" + emf);
+	 * 
+	 * JpaTransactionManager transactionManager = new JpaTransactionManager();
+	 * transactionManager.setEntityManagerFactory(emf);
+	 * 
+	 * return transactionManager;
+	 * 
+	 * }
+	 */
+
 }
