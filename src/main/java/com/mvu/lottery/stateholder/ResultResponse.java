@@ -56,6 +56,19 @@ public class ResultResponse {
 	}
 
 	/**
+	 * 
+	 * @param baton
+	 * @return
+	 */
+	public static ResultResponse pendingWithExistingBaton(String baton) {
+		ResultResponse resp = new ResultResponse();
+		resp.setResult("Operation pending");
+		resp.status = "pending";
+		resp.baton = baton;
+		return resp;
+	}
+	
+	/**
 	 * Return the failed ResultResponse
 	 * @param msg
 	 * @return

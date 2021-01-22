@@ -1,6 +1,7 @@
 package com.mvu.lottery.service;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -82,6 +83,56 @@ public class AnalyzedDrawnNumberService implements LotteryConstants {
 	 */
 	public String retrieveAnalyzedData(LotteryType lotteryType) throws Exception {
 		return this.data.getAnalyzedData(this.lotteryAppConfig.getAnalyzedDataPathForType(lotteryType));
+	}
+	
+	/**
+	 * <p>Method to accept the callable task to be executed asynch
+	 * @param lotteryType
+	 * @param resultDataPrefixOrBaton
+	 * @param callableTask 
+	 * @return
+	 * @throws Exception
+	 */
+	public AsynchDataStateHolder retrieveAnalyzedDataAsynch(LotteryType lotteryType,
+			String resultDataPrefixOrBaton,
+			Callable<String> callableTask
+			) throws Exception {
+	
+		AsynchDataStateHolder stateHolder = AsynchDataStateHolder.createDefault();
+		
+		//See if the async baton exists
+		if (null != resultDataPrefixOrBaton && resultDataPrefixOrBaton.indexOf("_") != -1) {
+			
+			//Baton exists so check if the data is available
+			if(this.futureTransactionResultManager.isDataAvailable(resultDataPrefixOrBaton))
+			{
+				Object data = this.futureTransactionResultManager.retrieveData(resultDataPrefixOrBaton);
+				stateHolder = AsynchDataStateHolder.createWithData( data);
+				
+			} else {
+				throw new SystemIsBusyOrDataNotAvailableException("Data not available");
+			}
+		} else {
+			//Execute the task using the task wrapper
+			RunTaskAsynch<String> wrappedTask = () -> {
+				try {
+					return callableTask.call();
+				} catch (Exception e) {
+					
+					throw new RuntimeException(e);
+				}
+			};
+			Future<String> result = this.runFunctionAsynch(wrappedTask);
+			
+			String baton = "RandomStringForUniqueNess" + "_" + System.currentTimeMillis();
+			
+			this.futureTransactionResultManager.storeData(baton, result);
+			
+			stateHolder = AsynchDataStateHolder.createWithBaton(baton);
+
+		}
+	
+		return stateHolder;
 	}
 	
 	/**

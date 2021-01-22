@@ -34,6 +34,13 @@ public class LotteryConfiguration implements LotteryConstants {
 	@Value("${process.workingdir}")
 	private String workingDir;
 	
+	@Value("${lastDrawnNumberApiUrl}")
+	private String lastDrawnNumberApiUrl;
+	
+	public String getLastDrawnNumberApiUrl() {
+		return lastDrawnNumberApiUrl;
+	}
+
 	public String getWorkingDir() {
 		return workingDir;
 	}

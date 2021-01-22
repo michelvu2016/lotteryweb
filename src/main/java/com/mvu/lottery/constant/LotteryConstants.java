@@ -25,7 +25,7 @@ public interface LotteryConstants {
     };
     
     
-    String lastDrawnNumberApiUrl  = "http://www.calottery.com//api/DrawGameApi/DrawGamePastDrawResults/{lotteryTypeCode}/1/{NumberOfLastDrawn}";
+    //String lastDrawnNumberApiUrl  = "http://www.calottery.com/api/DrawGameApi/DrawGamePastDrawResults/{lotteryTypeCode}/1/{NumberOfLastDrawn}";
     
     Map<LotteryType, Integer> lottertTypeCodeMap = Stream.of(
     		new Object[][] {
@@ -169,12 +169,12 @@ public interface LotteryConstants {
      * @param numberOfDrawn
      * @return
      */
-    default public String getLastDrawnNumberApiUrl(LotteryType lotteryType, int numberOfDrawn) {
+    default public String getLastDrawnNumberApiUrl(LotteryType lotteryType, int numberOfDrawn, String lotteryLastDrawnApiUrl) {
     	return StringUtils.createStringTeamplate()
     								.markerAndValue("lotteryTypeCode", String.valueOf(lottertTypeCodeMap.get(lotteryType)))
     								
     								.markerAndValue("NumberOfLastDrawn", String.valueOf(numberOfDrawn))
-    								.format(lastDrawnNumberApiUrl)
+    								.format(lotteryLastDrawnApiUrl)
     								;
     }
     

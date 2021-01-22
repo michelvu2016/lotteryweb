@@ -145,7 +145,8 @@ public class LastDrawnTicketService implements LotteryConstants {
 				LastDrawnNumberOnfileInfo lastDrawnNumberInfo = new LastDrawnNumberOnfileInfo(returnData, numPastDrawnsNeeded);
 				
 				if (numPastDrawnsNeeded > 0) {
-					lastDrawnNumberInfo.setDataRetrievalUrl(getLastDrawnNumberApiUrl(lotteryType, numPastDrawnsNeeded));
+					lastDrawnNumberInfo.setDataRetrievalUrl(getLastDrawnNumberApiUrl(lotteryType, numPastDrawnsNeeded,
+							lotteryConfig.getLastDrawnNumberApiUrl()));
 				}
 				
 				return lastDrawnNumberInfo;

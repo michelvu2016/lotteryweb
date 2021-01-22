@@ -30,7 +30,11 @@ import com.mvu.lottery.constant.LotteryConfiguration;
 import com.mvu.lottery.constant.LotteryConstants;
 import com.mvu.lottery.customserializer.SerializeFieldConditionally;
 import com.mvu.lottery.data.model.SelectedTicketData;
+import com.mvu.lottery.exceptions.SystemIsBusyOrDataNotAvailableException;
+import com.mvu.lottery.service.AnalyzedDrawnNumberService;
 import com.mvu.lottery.service.LastDrawnTicketService;
+import com.mvu.lottery.service.helpers.LotteryDrawnNumberContentAccessor;
+import com.mvu.lottery.stateholder.AsynchDataStateHolder;
 import com.mvu.lottery.stateholder.LastDrawnNumberOnfileInfo;
 import com.mvu.lottery.stateholder.LastDrawnTicketStateHolder;
 import com.mvu.lottery.stateholder.ResultResponse;
@@ -47,6 +51,9 @@ public class LotteryDataController implements LotteryConstants {
 	private LotteryConfiguration lotteryConfig;
 	@Inject
 	private LastDrawnTicketService lastDrawnTicketService;
+	
+	@Inject
+	private AnalyzedDrawnNumberService analyzedDrawnNumberService;
 	
 	@Autowired
 	private SerializeFieldConditionally serializer;
@@ -222,7 +229,40 @@ public class LotteryDataController implements LotteryConstants {
 		}
 	}
 	
-	
-	
+	@CrossOrigin
+	@GetMapping("api/lastDrawnTickets")
+	public ResultResponse getPastTicketsFromUsingHostUrl(
+			@PathParam("id") String id, 
+			@PathParam("baton") String baton,
+			@PathParam("url") String url
+			) {
+		log.info(">>>Request data received - id: "+ id);
+		log.info(">>>Request data received - url: "+ url);
+		
+		ResultResponse resultResp = ResultResponse.pending();
+		try {
+			AsynchDataStateHolder stateHolder = this.analyzedDrawnNumberService.retrieveAnalyzedDataAsynch(
+					getLotteryTypeFromName(id), 
+					baton, 
+					() -> {
+						final String[] data = new String[] {""}; 
+						LotteryDrawnNumberContentAccessor accessor = new 
+								LotteryDrawnNumberContentAccessor();
+						accessor.retrieveContent(url, (content) -> {
+							data[0] = content;
+							});
+						return data[0];
+					});
+			resultResp = ResultResponse.fromStateHolder(stateHolder);
+		} catch(SystemIsBusyOrDataNotAvailableException e) {
+			resultResp = ResultResponse.pendingWithExistingBaton(baton);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+		
+		
+		return resultResp;
+	}
 	
 }
