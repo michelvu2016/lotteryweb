@@ -1,0 +1,28 @@
+{
+  "groups": [
+    {
+      "name": "spring.user.h2.datasource",
+      "type": "com.mvu.lottery.configuration.H2DBConfig",
+      "sourceType": "com.mvu.lottery.configuration.H2DBConfig"
+    },
+    {
+      "name": "spring.user.h2.datasource",
+      "type": "javax.sql.DataSource",
+      "sourceType": "com.mvu.lottery.configuration.H2DBConfig",
+      "sourceMethod": "dataSource()"
+    },
+    {
+      "name": "spring.user.mysql.datasource",
+      "type": "com.mvu.lottery.configuration.MySqlDSConfig",
+      "sourceType": "com.mvu.lottery.configuration.MySqlDSConfig"
+    },
+    {
+      "name": "spring.user.mysql.datasource",
+      "type": "javax.sql.DataSource",
+      "sourceType": "com.mvu.lottery.configuration.MySqlDSConfig",
+      "sourceMethod": "dataSource()"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
